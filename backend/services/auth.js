@@ -1,6 +1,7 @@
 import User from "../models/user.js"
 import { AlreadyExistError } from "../utils/appErrors.js"
 import bcrypt from "bcryptjs"
+import { generateToken } from "../utils/generateToken.js"
 const signup = async ({ fullName, username, email, password }) => {
 
     const exisingUser = await User.findOne({ username })
@@ -23,7 +24,8 @@ const signup = async ({ fullName, username, email, password }) => {
     })
 
     await newUser.save();
-    return {...newUser._doc,password:""};
+    const token = generateToken({userId:newUser._id});
+    return { ...newUser._doc, password: "", token };
 }
 
 const login = () => {

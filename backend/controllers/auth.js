@@ -4,7 +4,14 @@ export const signup = async (req, res, next) => {
     const { fullName, username, email, password } = req.body;
     try {
         const user = await authServices.signup({ fullName, username, email, password });
-        res.json(user);
+        const { token, ...data } = user;
+        res.cookie("jwt", token, {
+            maxAge: 8 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV !== "development"
+        });
+        res.json({token,data})
     } catch (error) {
         next(error);
     }
