@@ -7,6 +7,7 @@ class AppError extends Error {
         super(message || status);
         this.code = code;
         this.status = status;
+        this.isOperational=true
         this.errors = errors;
         Error.captureStackTrace(this, this.constructor);
     }

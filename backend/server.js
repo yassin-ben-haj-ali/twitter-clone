@@ -11,7 +11,16 @@ dotenv.config();
 const app = express();
 
 app.use("/api", rootRouter)
-
+app.use((err, req, res, next) => {
+    logger.error(err);
+     if (err.isOperational) {
+        console.log("isoperationel",err.isOperational)
+        res.status(err.code).json({ message: err.message });
+    } else {
+        console.log("isNotOperationel",err.isOperational)
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 
 const server = http.createServer(app);
