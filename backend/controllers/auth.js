@@ -11,19 +11,34 @@ export const signup = async (req, res, next) => {
             sameSite: "strict",
             secure: process.env.NODE_ENV !== "development"
         });
-        res.json({token,data})
+        res.json({ token, data })
     } catch (error) {
         next(error);
     }
 
 }
 
-export const login = (req, res) => {
-    const user = authServices.login();
-    res.json(user);
+export const login = async (req, res, next) => {
+    const { username, password } = req.body;
+    try {
+        const user = await authServices.login({ username, password });
+        const { token, ...data } = user;
+        res.cookie("jwt", token, {
+            maxAge: 8 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV !== "development"
+        });
+        res.json({ token, data })
+    } catch (error) {
+        next(error);
+    }
 }
 
 export const logout = (req, res) => {
-    const user = authServices.logout();
-    res.json(user);
+    try {
+        res.cookie("jwt", "", { maxAge: 0 }).json({ message: "Logged out successfully" })
+    } catch (error) {
+        next(error)
+    }
 }

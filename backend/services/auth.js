@@ -1,5 +1,5 @@
 import User from "../models/user.js"
-import { AlreadyExistError } from "../utils/appErrors.js"
+import { AlreadyExistError, BadRequestError } from "../utils/appErrors.js"
 import bcrypt from "bcryptjs"
 import { generateToken } from "../utils/generateToken.js"
 const signup = async ({ fullName, username, email, password }) => {
@@ -24,22 +24,29 @@ const signup = async ({ fullName, username, email, password }) => {
     })
 
     await newUser.save();
-    const token = generateToken({userId:newUser._id});
+    const token = generateToken({ userId: newUser._id });
     return { ...newUser._doc, password: "", token };
 }
 
-const login = () => {
+const login = async ({ username, password }) => {
 
-    return { data: "you hit the login endpoint" }
+    const user = await User.findOne({ username });
+    const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
+
+    if (!user || !isPasswordCorrect) {
+        throw new BadRequestError("Invalid username or Password")
+    }
+    const token=generateToken({userId:user._id});
+    return {
+        ...user._doc,
+        password:"",
+        token
+    }
+
 
 }
 
-const logout = () => {
 
-    return { data: "you hit the logout endpoint" }
-
-}
-
-const authServices = { signup, login, logout }
+const authServices = { signup, login }
 
 export default authServices;
