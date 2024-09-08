@@ -49,13 +49,13 @@ const userSchema = new mongoose.Schema({
     },
     link: {
         type: String,
-        required: true
+        default: ""
     }
 
 },
     { timestamps: true }
 )
 
-const user = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
-export default user;
+export default User;

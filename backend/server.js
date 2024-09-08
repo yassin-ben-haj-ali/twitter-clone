@@ -10,6 +10,7 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json())
 app.use("/api", rootRouter)
 app.use((err, req, res, next) => {
     logger.error(err);
