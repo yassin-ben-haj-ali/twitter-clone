@@ -4,6 +4,7 @@ import http from "http"
 import mongoose from "mongoose";
 
 import rootRouter from "./routes/index.js";
+import logger from "./utils/logger.js";
 
 dotenv.config();
 
@@ -20,11 +21,11 @@ const PORT = process.env.PORT || 5000
 mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
-        console.log('✅ Connected to DB');
+        logger.info('✅ Connected to DB');
         server.listen(PORT, () => {
-            console.log(`🚀 Server is running on port ${PORT}`);
+            logger.info(`🚀 Server is running on port ${PORT}`);
         });
     })
     .catch((err) => {
-        console.error(err.message);
+        logger.error(err.message);
     });
