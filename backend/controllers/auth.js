@@ -42,3 +42,12 @@ export const logout = (req, res) => {
         next(error)
     }
 }
+
+export const getMe = async (req, res) => {
+    try {
+        const user = await authServices.getMe(req.user._id);
+        res.json(user);
+    } catch (error) {
+        next(error)
+    }
+}
