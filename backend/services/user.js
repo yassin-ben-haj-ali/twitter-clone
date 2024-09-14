@@ -1,3 +1,4 @@
+import Notification from "../models/notification.js";
 import User from "../models/user.js"
 import { BadRequestError, NotFoundError } from "../utils/appErrors.js";
 
@@ -32,7 +33,15 @@ const followUnfollowUser = async ({ currentUserId, userId }) => {
         //follow user
         await User.findByIdAndUpdate(userId, { $push: { followers: currentUserId } });
         await User.findByIdAndUpdate(currentUserId, { $push: { followings: userId } });
-        // TODO: send notifciation
+        //send notifciation to the user
+        const newNotification = new Notification({
+            type: "follow",
+            from: currentUserId,
+            to: userToModify._id
+        })
+
+        await newNotification.save();
+
         message = "User followed successfully"
     }
 
