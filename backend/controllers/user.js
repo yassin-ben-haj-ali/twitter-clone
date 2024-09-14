@@ -28,3 +28,28 @@ export const followUnfollowUser = async (req, res, next) => {
     }
 
 }
+
+export const getSuggestedUsers = async (req, res, next) => {
+
+    const { _id: currentUserId } = req.user;
+
+    try {
+        const users = await userServices.getSuggestedUsers(currentUserId);
+        res.json(users);
+    } catch (err) {
+        next(err)
+    }
+
+}
+
+export const updateProfile = async (req, res, next) => {
+    const { body: updatedData } = req;
+    const { _id: userId } = req.user;
+    try {
+        const user = await userServices.updateProfile(updatedData, userId);
+        res.json(user)
+    } catch (err) {
+        console.log(err)
+        next(err);
+    }
+}
