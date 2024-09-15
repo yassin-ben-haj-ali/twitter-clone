@@ -1,13 +1,14 @@
 import express from "express"
-import { authenticate } from "../middlewares/auth.js";
 import { followUnfollowUser, getSuggestedUsers, getUserProfile, updateProfile } from "../controllers/user.js";
+import { authenticate } from "../middlewares/auth.js";
+import catchMiddleware from "../middlewares/api.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/profile/:username",getUserProfile);
-userRouter.post("/follow/:id",authenticate,followUnfollowUser);
-userRouter.get("/suggested",authenticate,getSuggestedUsers);
-userRouter.post("/update",authenticate,updateProfile);
+userRouter.get("/profile/:username", catchMiddleware(getUserProfile));
+userRouter.post("/follow/:id", authenticate, catchMiddleware(followUnfollowUser));
+userRouter.get("/suggested", authenticate, catchMiddleware(getSuggestedUsers));
+userRouter.post("/update", authenticate, catchMiddleware(updateProfile));
 
 
 

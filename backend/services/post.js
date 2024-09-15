@@ -1,8 +1,10 @@
+import { v2 as cloudinary } from "cloudinary"
+
 import Notification from "../models/notification.js";
 import Post from "../models/post.js";
 import User from "../models/user.js";
+
 import { AuthorizationError, BadRequestError, NotFoundError } from "../utils/appErrors.js";
-import { v2 as cloudinary } from "cloudinary"
 
 const createPost = async (postData, userId) => {
     const { text } = postData;

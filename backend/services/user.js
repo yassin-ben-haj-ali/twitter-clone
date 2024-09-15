@@ -3,6 +3,7 @@ import { v2 as cloudinary } from "cloudinary"
 
 import Notification from "../models/notification.js";
 import User from "../models/user.js"
+
 import { BadRequestError, NotFoundError } from "../utils/appErrors.js";
 
 const getUserProfile = async (username) => {

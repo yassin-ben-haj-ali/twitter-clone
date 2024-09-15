@@ -1,7 +1,10 @@
-import User from "../models/user.js"
-import { AlreadyExistError, BadRequestError, NotFoundError } from "../utils/appErrors.js"
 import bcrypt from "bcryptjs"
+
+import { AlreadyExistError, BadRequestError, NotFoundError } from "../utils/appErrors.js"
 import { generateToken } from "../utils/generateToken.js"
+
+import User from "../models/user.js"
+
 const signup = async ({ fullName, username, email, password }) => {
 
     const exisingUser = await User.findOne({ username })
