@@ -7,7 +7,7 @@ const authRouter = express.Router();
 
 authRouter.post("/signup", catchMiddleware(signup))
 authRouter.post("/login", catchMiddleware(login))
-authRouter.get("/logout", catchMiddleware(logout))
+authRouter.post("/logout", catchMiddleware(logout))
 authRouter.get("/me", authenticate, catchMiddleware(getMe))
 
 
