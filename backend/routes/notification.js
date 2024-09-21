@@ -6,7 +6,7 @@ import catchMiddleware from "../middlewares/api.js";
 
 const notificationRouter = express.Router();
 
-router.get("/", authenticate, catchMiddleware(getNotifications));
-router.delete("/", authenticate, catchMiddleware(deleteNotifications));
+notificationRouter.get("/", authenticate, catchMiddleware(getNotifications));
+notificationRouter.delete("/", authenticate, catchMiddleware(deleteNotifications));
 
 export default notificationRouter;

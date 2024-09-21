@@ -6,7 +6,7 @@ export const getNotifications = async (req, res) => {
     res.json(notifciations)
 }
 
-export const deleteNotifications = async (userId) => {
+export const deleteNotifications = async (req,res) => {
 
     const { _id: userId } = req.user;
     const notifciations = await notifciationServices.deleteNotifications(userId);
