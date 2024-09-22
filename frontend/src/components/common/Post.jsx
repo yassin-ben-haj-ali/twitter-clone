@@ -72,6 +72,40 @@ const Post = ({ post }) => {
 		}
  })
 
+ const {mutate:commentPost,isPending:isCommenting}=useMutation({
+	mutationFn:async()=>{
+	   try{
+
+		const res=await fetch(`/api/post/comment/${post._id}`,{
+		 method:"POST",
+		 headers:{
+			"Content-Type":"application/json"
+		 },
+		 body:JSON.stringify({text:comment})
+		});
+
+		const data=await res.json();
+
+		if(!res.ok) throw new Error (data.message || "Something went wrong")
+
+		return data;
+
+	   }catch(error){
+		 throw new Error(error);
+	   }
+	},
+	onSuccess:()=>{
+	  toast.success("Comment posted successfully")
+	  //invalidate the query to refetch the data
+	  //this is not the best UX
+	  queryClient.invalidateQueries({queryKey:["posts"]})
+	  //TODO: improve this function by updating the cache directly
+	},
+	onError:(error)=>{
+		toast.error(error.message);
+	}
+})
+
 	const postOwner = post.user;
 	const isLiked = post.likes.includes(authUser._id);
 
@@ -79,7 +113,6 @@ const Post = ({ post }) => {
 
 	const formattedDate = "1h";
 
-	const isCommenting = false;
 
 	const handleDeletePost = () => {
 		deletePost();
@@ -87,6 +120,8 @@ const Post = ({ post }) => {
 
 	const handlePostComment = (e) => {
 		e.preventDefault();
+		if (isCommenting) return;
+		commentPost();
 	};
 
 	const handleLikePost = () => {
@@ -201,7 +236,7 @@ const Post = ({ post }) => {
 								<span className='text-sm text-slate-500 group-hover:text-green-500'>0</span>
 							</div>
 							<div className='flex gap-1 items-center group cursor-pointer' onClick={handleLikePost}>
-								{!isLiked && !isLiking (
+								{!isLiked && !isLiking && (
 									<FaRegHeart className='w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500' />
 								)}
 								{isLiked && !isLiking && <FaRegHeart className='w-4 h-4 cursor-pointer text-pink-500 ' />}
