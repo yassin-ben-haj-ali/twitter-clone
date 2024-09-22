@@ -56,7 +56,7 @@ const followUnfollowUser = async ({ currentUserId, userId }) => {
 //TODO: optimize this function
 const getSuggestedUsers = async (userId) => {
 
-    const usersFollowedByMe = await User.findById(userId).select("following")
+    const usersFollowedByMe = await User.findById(userId).select("followings")
 
     const users = await User.aggregate([
         {
@@ -66,7 +66,8 @@ const getSuggestedUsers = async (userId) => {
         },
         { $sample: { size: 10 } }
     ])
-    const filteredUsers = users.filter(user => usersFollowedByMe.followings?.includes(user._id))
+    
+    const filteredUsers = users.filter(user => !usersFollowedByMe.followings?.includes(user._id))
     const suggestedUsers = filteredUsers.slice(0, 4)
 
     suggestedUsers.forEach(user => user.password = null)
