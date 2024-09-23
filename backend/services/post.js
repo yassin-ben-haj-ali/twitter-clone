@@ -1,10 +1,9 @@
-import { v2 as cloudinary } from "cloudinary"
-
 import Notification from "../models/notification.js";
 import Post from "../models/post.js";
 import User from "../models/user.js";
 
 import { AuthorizationError, BadRequestError, NotFoundError } from "../utils/appErrors.js";
+import uploadFile from "../utils/uploadFile.js";
 
 const createPost = async (postData, userId) => {
     const { text } = postData;
@@ -18,8 +17,7 @@ const createPost = async (postData, userId) => {
     }
 
     if (img) {
-        const uploadedResponse = await cloudinary.uploader.upload(img);
-        img = uploadedResponse.secure_url;
+        img = await uploadFile(img);
     }
 
     const newPost = new Post({

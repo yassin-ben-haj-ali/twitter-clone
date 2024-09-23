@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs"
-import { v2 as cloudinary } from "cloudinary"
 
 import Notification from "../models/notification.js";
 import User from "../models/user.js"
 
 import { BadRequestError, NotFoundError } from "../utils/appErrors.js";
+import uploadFile from "../utils/uploadFile.js";
 
 const getUserProfile = async (username) => {
 
@@ -94,31 +94,12 @@ const updateProfile = async (updatedData, userId) => {
         user.password = await bcrypt.hash(newPassword, salt);
     }
 
-    // TODO: create independant middleware to upload file
-    // TODO: create independant middleware to delete file
-
     if (profileImg) {
-
-        //delete the old image from cloudinary account
-        if (user.profileImg) {
-            //extract id from the url
-            const profileImgeId = user.profileImg.split("/").pop().split(".")[0]
-            await cloudinary.uploader.destroy(profileImgeId)
-        }
-
-        const uploadedResponse = await cloudinary.uploader.upload(profileImg);
-        profileImg = uploadedResponse.secure_url
+        profileImg = await uploadFile(profileImg, user.profileImg);
     }
 
     if (coverImg) {
-        //delete the old image from cloudinary account
-        if (user.coverImg) {
-            //extract id from the url
-            const coverImgeId = user.profileImg.split("/").pop().split(".")[0]
-            await cloudinary.uploader.destroy(coverImgeId)
-        }
-        const uploadedResponse = await cloudinary.uploader.upload(coverImg);
-        coverImg = uploadedResponse.secure_url
+        coverImg = await uploadFile(coverImg, user.coverImg);
     }
 
     user.fullName = fullName || user.fullName;
