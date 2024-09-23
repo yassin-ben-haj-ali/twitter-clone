@@ -15,6 +15,8 @@ const Post = ({ post }) => {
 	const {data:authUser}=useQuery({queryKey:['authUser']})
 	const queryClient=useQueryClient();
 
+	console.log(post);
+
 
 	const {mutate:deletePost,isPending:isDeleting}=useMutation({
            mutationFn:async()=>{
@@ -60,12 +62,23 @@ const Post = ({ post }) => {
 			 throw new Error(error);
 		   }
 		},
-		onSuccess:()=>{
+		onSuccess:(updatedLikes)=>{
 		  toast.success("Post liked successfully")
-		  //invalidate the query to refetch the data
-		  //this is not the best UX
-		  queryClient.invalidateQueries({queryKey:["posts"]})
-		  //TODO: improve this function by updating the cache directly for that post
+		  //this is not the best UX because it will refetch all posts
+		//   queryClient.invalidateQueries({queryKey:["posts"]})
+
+		  // instead, update the cache directly for that post
+		  queryClient.setQueryData(["posts"],(oldData)=>{
+                 return oldData.map((oldPost)=>{
+					   //change the likes array for only the updated post  
+                       if(oldPost._id === post._id){
+						 return {...oldPost,likes:updatedLikes}
+					   }
+					   
+					   return oldPost
+				 })
+		  })
+		  setComment("");
 		},
 		onError:(error)=>{
 			toast.error(error.message);
@@ -94,12 +107,23 @@ const Post = ({ post }) => {
 		 throw new Error(error);
 	   }
 	},
-	onSuccess:()=>{
-	  toast.success("Comment posted successfully")
-	  //invalidate the query to refetch the data
-	  //this is not the best UX
-	  queryClient.invalidateQueries({queryKey:["posts"]})
-	  //TODO: improve this function by updating the cache directly
+	onSuccess:(updatedComments)=>{
+	  toast.success("Comment posted successfully");
+	  setComment("");
+	  //this is not the best UX because it will refetch all posts
+		//   queryClient.invalidateQueries({queryKey:["posts"]})
+
+		  // instead, update the cache directly for that post
+		  queryClient.setQueryData(["posts"],(oldData)=>{
+                 return oldData.map((oldPost)=>{
+					   //change the comments array for only that post  
+                       if(oldPost._id === post._id){
+						 return {...oldPost,comments:updatedComments}
+					   }
+					   
+					   return oldPost
+				 })
+		  })
 	},
 	onError:(error)=>{
 		toast.error(error.message);

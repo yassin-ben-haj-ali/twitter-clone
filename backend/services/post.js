@@ -60,7 +60,7 @@ const commentOnPost = async (commentData, postId, userId) => {
     if (!text) {
         throw new BadRequestError("Text field is required");
     }
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId)
 
     if (!post) {
         throw new NotFoundError("Post not found");
@@ -69,9 +69,9 @@ const commentOnPost = async (commentData, postId, userId) => {
     const comment = { user: userId, text };
 
     post.comments.push(comment);
-    await post.save();
-
-    return post;
+    await post.save()
+    const populatedPost=await Post.populate(post, { path: "comments.user", select: "-password" })
+    return populatedPost.comments;
 
 };
 
