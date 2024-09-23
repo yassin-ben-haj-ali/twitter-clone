@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary"
 
 import rootRouter from "./routes/index.js";
 import logger from "./utils/logger.js";
+import path from "path";
 
 dotenv.config();
 cloudinary.config({
@@ -24,10 +25,8 @@ app.use("/api", rootRouter)
 app.use((err, req, res, next) => {
     logger.error(err);
     if (err.isOperational) {
-        console.log("isoperationel", err.isOperational)
         res.status(err.code).json({ message: err.message });
     } else {
-        console.log("isNotOperationel", err.isOperational)
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
@@ -35,7 +34,14 @@ app.use((err, req, res, next) => {
 
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000
+const __dirname=path.resolve();
 
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname,"/frontend/dist")));
+    app.get("*",(req,res)=>{
+        res.sendFile(path.resolve(__dirname,"frontend","dist","index.html"));
+    })
+}
 
 mongoose
     .connect(process.env.MONGO_URI)
