@@ -27,7 +27,7 @@ const NotificationPage = () => {
 		}
 	})
 
-	const {data:deleteNotifications}=useMutation({
+	const {mutate:deleteNotifications}=useMutation({
 		mutationFn:async()=>{
              try{
  
