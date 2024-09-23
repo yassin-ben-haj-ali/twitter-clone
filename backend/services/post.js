@@ -1,7 +1,7 @@
 import Notification from "../models/notification.js";
 import Post from "../models/post.js";
 import User from "../models/user.js";
-
+import {v2 as cloudinary } from "cloudinary"
 import { AuthorizationError, BadRequestError, NotFoundError } from "../utils/appErrors.js";
 import uploadFile from "../utils/uploadFile.js";
 
