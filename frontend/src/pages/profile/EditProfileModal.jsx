@@ -1,6 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import useUpdateProfile from "../../hooks/useUpdateProfile";
 
 const EditProfileModal = ({authUser}) => {
 	const [formData, setFormData] = useState({
@@ -13,37 +12,10 @@ const EditProfileModal = ({authUser}) => {
 		currentPassword: "",
 	});
 
-	const queryClient=useQueryClient();
 
-	const {mutate:updateProfile,isLoading:isUpdatingProfile}=useMutation({
-		mutationFn:async()=>{
-            try{
-               const res=await fetch(`/api/user/update`,{
-				method:"POST",
-				headers:{
-					"Content-Type":"application/json"
-				},
-				body:JSON.stringify(formData)
-			   });
-			   const data=await res.json();
-               if (!res.ok) throw new Error (data.message || "Something went wrong");
-               return data;
-			}catch(error){
-				throw new Error(error.message);
-			}
-		},
-		onSuccess:()=>{
-			toast.success("profile updated successfully")
-			Promise.all([
-                 queryClient.invalidateQueries({queryKey:["authUser"]}),
-                 queryClient.invalidateQueries({queryKey:["userProfile"]})
-			])
-		},
-		onError:(error)=>{
-           toast.error(error.message);
-		}
-	})
+	const {updateProfile,isUpdatingProfile} =useUpdateProfile();
 
+	
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
@@ -75,9 +47,9 @@ const EditProfileModal = ({authUser}) => {
 					<h3 className='font-bold text-lg my-3'>Update Profile</h3>
 					<form
 						className='flex flex-col gap-4'
-						onSubmit={(e) => {
+						onSubmit={async(e) => {
 							e.preventDefault();
-							updateProfile();
+							await updateProfile(formData);
 						}}
 					>
 						<div className='flex flex-wrap gap-2'>
